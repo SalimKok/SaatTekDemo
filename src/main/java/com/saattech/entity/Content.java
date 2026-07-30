@@ -12,7 +12,6 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 @Entity
-@Table(name = "content")
 @DynamicUpdate
 @Data
 public class Content {

@@ -6,7 +6,6 @@ import lombok.Data;
 import java.time.LocalDate;
 
 @Entity
-@Table(name = "metadata")
 @DynamicUpdate
 @Data
 public class Metadata {

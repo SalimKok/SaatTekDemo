@@ -8,10 +8,10 @@ import lombok.Data;
 @Data
 public class CastRequestDto {
 
-    @NotBlank(message = "Cast adı boş bırakılamaz")
+    @NotBlank(message = "Cast name cannot be left blank.")
     private String name;
 
-    @NotNull(message = "Cast tipi boş bırakılamaz")
+    @NotNull(message = "Cast type cannot be left blank.")
     private CastType type;
 }
 
