@@ -1,0 +1,63 @@
+package com.saattech.controller;
+
+import com.saattech.dto.request.ContentRequestDto;
+import com.saattech.dto.response.ContentResponseDto;
+import com.saattech.service.ContentService;
+import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+@RestController
+@RequestMapping("/api/contents")
+@RequiredArgsConstructor
+public class ContentController {
+
+    private final ContentService contentService;
+
+    @GetMapping
+    public ResponseEntity<Page<ContentResponseDto>> getAllContents(@PageableDefault(size = 10) Pageable pageable) {
+        Page<ContentResponseDto> contents = contentService.getAllContents(pageable);
+        return ResponseEntity.ok(contents);
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<ContentResponseDto> getContentById(@PathVariable Long id) {
+        ContentResponseDto content = contentService.getContentById(id);
+        return ResponseEntity.ok(content);
+    }
+
+    @PostMapping
+    public ResponseEntity<ContentResponseDto> saveContent(@Valid @RequestBody ContentRequestDto requestDto){
+        ContentResponseDto savedContent = contentService.saveContent(requestDto);
+        return new ResponseEntity<>(savedContent, HttpStatus.CREATED);
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteContent(@PathVariable Long id){
+        contentService.deleteContent(id);
+        return ResponseEntity.noContent().build();
+    }
+
+    @PostMapping("/{contentId}/casts/{castId}")
+    public ResponseEntity<Void> addCastToContent(@PathVariable Long contentId, @PathVariable Long castId) {
+        contentService.addCastToContent(contentId, castId);
+        return ResponseEntity.ok().build();
+    }
+
+    @DeleteMapping("/{contentId}/casts/{castId}")
+    public ResponseEntity<Void> removeCastFromContent(@PathVariable Long contentId, @PathVariable Long castId) {
+        contentService.removeCastFromContent(contentId, castId);
+        return ResponseEntity.noContent().build();
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<ContentResponseDto> updateContent(@PathVariable Long id,@Valid @RequestBody ContentRequestDto requestDto) {
+        ContentResponseDto updatedContent = contentService.updateContent(id, requestDto);
+        return ResponseEntity.ok(updatedContent);
+    }
+}

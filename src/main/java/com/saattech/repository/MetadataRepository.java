@@ -1,6 +1,6 @@
-package com.example.demo.repository;
+package com.saattech.repository;
 
-import com.example.demo.entity.Metadata;
+import com.saattech.entity.Metadata;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
