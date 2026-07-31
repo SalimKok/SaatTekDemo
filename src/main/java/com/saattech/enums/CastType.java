@@ -2,5 +2,6 @@ package com.saattech.enums;
 
 public enum CastType {
     ACTOR,
-    DIRECTOR
+    DIRECTOR,
+    WRITER
 }

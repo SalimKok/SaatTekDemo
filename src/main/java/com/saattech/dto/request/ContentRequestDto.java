@@ -1,6 +1,7 @@
 package com.saattech.dto.request;
 
 import com.saattech.enums.ContentType;
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
@@ -10,18 +11,20 @@ import java.util.List;
 @Data
 public class ContentRequestDto {
 
-    @NotBlank(message = "Content title cannot be left blank.")
-    private String title;
-
     private Integer seasonNo;
     private Integer episodeNo;
-    private String poster;
 
     @NotNull(message = "Content type cannot be left blank.")
     private ContentType contentType;
 
     private Long parentId;
-    private List<Long> castIds;
+
+    @Valid
+    private List<ContentCastRequestDto> casts;
+
     private List<ContentRequestDto> subContents;
+
+    @Valid
+    @NotNull(message = "Metadata cannot be left blank.")
     private MetadataRequestDto metadata;
 }

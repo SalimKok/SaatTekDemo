@@ -2,6 +2,7 @@ package com.saattech.service;
 
 import com.saattech.dto.request.ContentRequestDto;
 import com.saattech.dto.response.ContentResponseDto;
+import com.saattech.enums.CastType;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
@@ -15,7 +16,7 @@ public interface ContentService {
 
     void deleteContent(Long id);
 
-    void addCastToContent(Long contentId, Long castId);
+    void addCastToContent(Long contentId, Long castId, CastType role);
 
     void removeCastFromContent(Long contentId, Long castId);
 

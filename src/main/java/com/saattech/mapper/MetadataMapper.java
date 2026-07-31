@@ -13,6 +13,8 @@ public class MetadataMapper {
         MetadataResponseDto dto = new MetadataResponseDto();
 
         dto.setId(metadata.getId());
+        dto.setTitle(metadata.getTitle());
+        dto.setPoster(metadata.getPoster());
         dto.setPlot(metadata.getPlot());
         dto.setImdbRating(metadata.getImdbRating());
         dto.setGenre(metadata.getGenre());
@@ -28,6 +30,8 @@ public class MetadataMapper {
 
         Metadata metadata = new Metadata();
 
+        metadata.setTitle(requestDto.getTitle());
+        metadata.setPoster(requestDto.getPoster());
         metadata.setPlot(requestDto.getPlot());
         metadata.setImdbRating(requestDto.getImdbRating());
         metadata.setGenre(requestDto.getGenre());
@@ -36,12 +40,22 @@ public class MetadataMapper {
         metadata.setReleased(requestDto.getReleased());
         metadata.setRuntime(requestDto.getRuntime());
         metadata.setImdbVotes(requestDto.getImdbVotes());
+        metadata.setRated(requestDto.getRated());
+        metadata.setAwards(requestDto.getAwards());
+        metadata.setBoxOffice(requestDto.getBoxOffice());
+        metadata.setMetascore(requestDto.getMetascore());
+        metadata.setImdbID(requestDto.getImdbID());
+        metadata.setDirector(requestDto.getDirector());
+        metadata.setWriter(requestDto.getWriter());
+        metadata.setActors(requestDto.getActors());
         return metadata;
     }
 
     public void updateEntityFromDto(MetadataRequestDto dto, Metadata metadata) {
         if (dto == null || metadata == null) return;
 
+        if (dto.getTitle() != null) metadata.setTitle(dto.getTitle());
+        if (dto.getPoster() != null) metadata.setPoster(dto.getPoster());
         if (dto.getPlot() != null) metadata.setPlot(dto.getPlot());
         if (dto.getImdbRating() != null) metadata.setImdbRating(dto.getImdbRating());
         if (dto.getGenre() != null) metadata.setGenre(dto.getGenre());

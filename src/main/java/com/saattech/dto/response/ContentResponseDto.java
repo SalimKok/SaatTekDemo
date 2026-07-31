@@ -16,6 +16,6 @@ public class ContentResponseDto {
     private ContentType contentType;
     private LocalDateTime createdAt;
     private List<ContentResponseDto> subContents;
-    private List<CastResponseDto> casts;
-    private MetadataResponseDto  metadata;
+    private List<ContentCastResponseDto> casts;
+    private MetadataResponseDto metadata;
 }
