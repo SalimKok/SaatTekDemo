@@ -2,6 +2,7 @@ package com.saattech.controller;
 
 import com.saattech.dto.request.ContentRequestDto;
 import com.saattech.dto.response.ContentResponseDto;
+import com.saattech.enums.CastType;
 import com.saattech.service.ContentService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -44,8 +45,8 @@ public class ContentController {
     }
 
     @PostMapping("/{contentId}/casts/{castId}")
-    public ResponseEntity<Void> addCastToContent(@PathVariable Long contentId, @PathVariable Long castId) {
-        contentService.addCastToContent(contentId, castId);
+    public ResponseEntity<Void> addCastToContent(@PathVariable Long contentId, @PathVariable Long castId, @RequestParam CastType role) {
+        contentService.addCastToContent(contentId, castId, role);
         return ResponseEntity.ok().build();
     }
 
