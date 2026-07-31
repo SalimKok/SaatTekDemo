@@ -1,4 +1,4 @@
-package com.saattech.saattech.exception;
+package com.saattech.exception;
 
 
 public class ResourceNotFoundException extends RuntimeException {

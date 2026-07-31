@@ -12,7 +12,7 @@ import com.saattech.enums.EntityStatus;
 import com.saattech.mapper.ContentMapper;
 import com.saattech.repository.CastRepository;
 import com.saattech.repository.ContentRepository;
-import com.saattech.saattech.exception.ResourceNotFoundException;
+import com.saattech.exception.ResourceNotFoundException;
 import com.saattech.service.ContentService;
 import com.saattech.service.MetadataService;
 import com.saattech.specification.builder.ContentSpecificationBuilder;

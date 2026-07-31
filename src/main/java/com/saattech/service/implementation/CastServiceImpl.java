@@ -6,7 +6,7 @@ import com.saattech.entity.Cast;
 import com.saattech.enums.EntityStatus;
 import com.saattech.mapper.CastMapper;
 import com.saattech.repository.CastRepository;
-import com.saattech.saattech.exception.ResourceNotFoundException;
+import com.saattech.exception.ResourceNotFoundException;
 import com.saattech.service.CastService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
