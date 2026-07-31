@@ -12,19 +12,16 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 @Entity
-@Table(name = "content")
 @DynamicUpdate
 @Data
 public class Content {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-
     private Long id;
-    private String title;
+
     private Integer seasonNo;
     private Integer episodeNo;
-    private String poster;
 
     @Enumerated(EnumType.STRING)
     private ContentType contentType;
@@ -35,25 +32,24 @@ public class Content {
     @CreationTimestamp
     private LocalDateTime createdAt;
 
-
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "parent_id")
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
     private Content parentContent;
 
-
     @OneToMany(mappedBy = "parentContent", cascade = CascadeType.ALL, orphanRemoval = true)
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
     private List<Content> subContents;
 
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "metadata_id", referencedColumnName = "id")
     private Metadata metadata;
 
-    @ManyToMany
-    @JoinTable(
-            name = "content_cast",
-            joinColumns = @JoinColumn(name = "content_id"),
-            inverseJoinColumns = @JoinColumn(name = "cast_id")
-    )
-    private List<Cast> casts;
+    @OneToMany(mappedBy = "content", cascade = CascadeType.ALL, orphanRemoval = true)
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
+    private List<ContentCast> castMembers;
 
-    }
+}

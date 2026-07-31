@@ -3,7 +3,6 @@ package com.saattech.service.implementation;
 import com.saattech.dto.request.CastRequestDto;
 import com.saattech.dto.response.CastResponseDto;
 import com.saattech.entity.Cast;
-import com.saattech.entity.Content;
 import com.saattech.enums.EntityStatus;
 import com.saattech.mapper.CastMapper;
 import com.saattech.repository.CastRepository;
@@ -23,7 +22,7 @@ public class CastServiceImpl implements CastService {
     private final CastMapper castMapper;
 
     @Override
-    public List<CastResponseDto> getAllCasts(){
+    public List<CastResponseDto> getAllCasts() {
         List<Cast> casts = castRepository.findByStatus(EntityStatus.ACTIVE);
 
         return casts.stream()
@@ -32,16 +31,16 @@ public class CastServiceImpl implements CastService {
     }
 
     @Override
-    public CastResponseDto saveActor(CastRequestDto requestDto){
+    public CastResponseDto saveActor(CastRequestDto requestDto) {
         Cast cast = castMapper.toEntity(requestDto);
         Cast savedCast = castRepository.save(cast);
         return castMapper.toDto(savedCast);
     }
 
     @Override
-    public void deleteCast(Long id){
+    public void deleteCast(Long id) {
         Cast cast = castRepository.findById(id)
-                        .orElseThrow(() -> new ResourceNotFoundException("No cast found to delete! ID: " + id));
+                .orElseThrow(() -> new ResourceNotFoundException("No cast found to delete! ID: " + id));
 
         cast.setStatus(EntityStatus.DELETED);
         castRepository.save(cast);

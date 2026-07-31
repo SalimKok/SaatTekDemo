@@ -6,15 +6,14 @@ import lombok.Data;
 import java.time.LocalDate;
 
 @Entity
-@Table(name = "metadata")
 @DynamicUpdate
 @Data
 public class Metadata {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-
     private Long id;
+
     private LocalDate released;
     private Double imdbRating;
     private String imdbVotes;
@@ -30,6 +29,10 @@ public class Metadata {
     private String metascore;
     private String imdbID;
     private String genre;
+    private String title;
+    private String poster;
+
+    @Column(columnDefinition = "TEXT")
     private String plot;
 
 }
