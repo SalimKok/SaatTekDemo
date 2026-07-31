@@ -11,9 +11,6 @@ import java.util.List;
 @Data
 public class ContentRequestDto {
 
-    @NotBlank(message = "Content title cannot be left blank.")
-    private String title;
-
     private Integer seasonNo;
     private Integer episodeNo;
 

@@ -17,11 +17,22 @@ public class MetadataServiceImpl implements MetadataService {
 
     @Override
     public Metadata createMetadata(MetadataRequestDto requestDto) {
+        if (requestDto.getImdbID() != null && metadataRepository.existsByImdbID(requestDto.getImdbID())) {
+            throw new RuntimeException("This movie already exists in the database! IMDB ID: " + requestDto.getImdbID());
+        }
+
         Metadata metadata = metadataMapper.toEntity(requestDto);
         return metadataRepository.save(metadata);
     }
     @Override
     public void updateMetadata(Metadata metadata, MetadataRequestDto requestDto) {
+
+        if (requestDto.getImdbID() != null
+            && !requestDto.getImdbID().equals(metadata.getImdbID())
+            && metadataRepository.existsByImdbID(requestDto.getImdbID())) {
+        throw new RuntimeException("This IMDB ID is already in use by another movie!");
+    }
+
         metadataMapper.updateEntityFromDto(requestDto, metadata);
         metadataRepository.save(metadata);
     }

@@ -1,5 +1,6 @@
 package com.saattech.dto.request;
 
+import jakarta.persistence.Column;
 import jakarta.validation.constraints.*;
 import lombok.Data;
 
@@ -26,7 +27,10 @@ public class MetadataRequestDto {
     private String awards;
     private String boxOffice;
     private String metascore;
+
+    @Column(unique = true)
     private String imdbID;
+
     private String director;
     private String writer;
     private String actors;
