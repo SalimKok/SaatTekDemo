@@ -10,4 +10,6 @@ import java.util.List;
 @Repository
 public interface CastRepository extends JpaRepository<Cast, Long> {
     List<Cast> findByStatus(EntityStatus status);
+
+    boolean existsByName(String name);
 }

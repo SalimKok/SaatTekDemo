@@ -3,7 +3,6 @@ package com.saattech.service.implementation;
 import com.saattech.dto.request.CastRequestDto;
 import com.saattech.dto.response.CastResponseDto;
 import com.saattech.entity.Cast;
-import com.saattech.entity.Content;
 import com.saattech.enums.EntityStatus;
 import com.saattech.mapper.CastMapper;
 import com.saattech.repository.CastRepository;
@@ -33,6 +32,10 @@ public class CastServiceImpl implements CastService {
 
     @Override
     public CastResponseDto saveActor(CastRequestDto requestDto){
+        if (castRepository.existsByName(requestDto.getName())) {
+            throw new RuntimeException("This name is already registered.: " + requestDto.getName());
+        }
+
         Cast cast = castMapper.toEntity(requestDto);
         Cast savedCast = castRepository.save(cast);
         return castMapper.toDto(savedCast);

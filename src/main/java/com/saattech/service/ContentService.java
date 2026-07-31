@@ -9,7 +9,7 @@ import java.util.List;
 
 public interface ContentService {
 
-    Page<ContentResponseDto> getAllContents(Pageable pageable);
+    Page<ContentResponseDto> getAllContents(com.saattech.specification.dto.ContentFilterDto filterDto,Pageable pageable);
 
     ContentResponseDto saveContent(ContentRequestDto requestDto);
 

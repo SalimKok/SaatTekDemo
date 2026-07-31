@@ -3,11 +3,11 @@ package com.saattech.controller;
 import com.saattech.dto.request.ContentRequestDto;
 import com.saattech.dto.response.ContentResponseDto;
 import com.saattech.service.ContentService;
+import com.saattech.specification.dto.ContentFilterDto;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -20,8 +20,9 @@ public class ContentController {
     private final ContentService contentService;
 
     @GetMapping
-    public ResponseEntity<Page<ContentResponseDto>> getAllContents(@PageableDefault(size = 10) Pageable pageable) {
-        Page<ContentResponseDto> contents = contentService.getAllContents(pageable);
+    public ResponseEntity<Page<ContentResponseDto>> getAllContents(ContentFilterDto filterDto, Pageable pageable) {
+
+        Page<ContentResponseDto> contents = contentService.getAllContents(filterDto, pageable);
         return ResponseEntity.ok(contents);
     }
 
