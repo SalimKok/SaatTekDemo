@@ -15,9 +15,12 @@ import com.saattech.repository.ContentRepository;
 import com.saattech.saattech.exception.ResourceNotFoundException;
 import com.saattech.service.ContentService;
 import com.saattech.service.MetadataService;
+import com.saattech.specification.builder.ContentSpecificationBuilder;
+import com.saattech.specification.dto.ContentFilterDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
@@ -33,9 +36,11 @@ public class ContentServiceImpl implements ContentService {
     private final MetadataService metadataService;
 
     @Override
-    public Page<ContentResponseDto> getAllContents(Pageable pageable) {
-        Page<Content> contentPage = contentRepository.findByStatus(EntityStatus.ACTIVE, pageable);
+    public Page<ContentResponseDto> getAllContents(ContentFilterDto filterDto, Pageable pageable) {
 
+        Specification<Content> spec = ContentSpecificationBuilder.build(filterDto);
+
+        Page<Content> contentPage = contentRepository.findAll(spec, pageable);
         return contentPage.map(contentMapper::toDto);
     }
 
