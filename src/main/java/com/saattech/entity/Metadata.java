@@ -18,9 +18,6 @@ public class Metadata {
     private Double imdbRating;
     private String imdbVotes;
     private String runtime;
-    private String director;
-    private String writer;
-    private String actors;
     private String rated;
     private String language;
     private String country;

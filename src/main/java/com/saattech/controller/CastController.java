@@ -26,7 +26,7 @@ public class CastController {
 
     @PostMapping
     public ResponseEntity<CastResponseDto> saveCast(@Valid @RequestBody CastRequestDto requestDto) {
-        CastResponseDto savedCast = castService.saveActor(requestDto);
+        CastResponseDto savedCast = castService.saveCast(requestDto);
         return new ResponseEntity<>(savedCast, HttpStatus.CREATED);
     }
 

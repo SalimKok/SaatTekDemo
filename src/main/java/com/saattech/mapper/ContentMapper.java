@@ -1,6 +1,7 @@
 package com.saattech.mapper;
 
 import com.saattech.dto.request.ContentRequestDto;
+import com.saattech.dto.response.ContentCastResponseDto;
 import com.saattech.dto.response.ContentResponseDto;
 import com.saattech.entity.Content;
 import lombok.RequiredArgsConstructor;
@@ -33,7 +34,6 @@ public class ContentMapper {
             dto.setMetadata(metadataMapper.toDto(content.getMetadata()));
         }
 
-
         if (content.getSubContents() != null && !content.getSubContents().isEmpty()){
             List<ContentResponseDto> subDtoList = content.getSubContents().stream()
                     .map(this::toDto)
@@ -42,6 +42,19 @@ public class ContentMapper {
             dto.setSubContents(subDtoList);
         }
 
+        if (content.getCastMembers() != null && !content.getCastMembers().isEmpty()) {
+            List<ContentCastResponseDto> contentCastDtoList = content.getCastMembers().stream()
+                    .map(contentCast -> {
+                        ContentCastResponseDto ccDto = new ContentCastResponseDto();
+                        ccDto.setId(contentCast.getId());
+                        ccDto.setRole(contentCast.getRole());
+                        ccDto.setCast(castMapper.toDto(contentCast.getCast()));
+                        return ccDto;
+                    })
+                    .collect(Collectors.toList());
+
+            dto.setCasts(contentCastDtoList);
+        }
         return dto;
     }
 

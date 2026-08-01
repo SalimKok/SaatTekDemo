@@ -11,5 +11,5 @@ import java.util.List;
 public interface CastRepository extends JpaRepository<Cast, Long> {
     List<Cast> findByStatus(EntityStatus status);
 
-    boolean existsByName(String name);
+    Cast findByName(String name);
 }

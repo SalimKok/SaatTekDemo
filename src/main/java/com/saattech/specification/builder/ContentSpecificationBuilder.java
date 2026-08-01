@@ -21,7 +21,7 @@ public class ContentSpecificationBuilder {
             }
 
             if (filter.getTitle() != null && !filter.getTitle().trim().isEmpty()) {
-                predicates.add(criteriaBuilder.like(criteriaBuilder.lower(root.get("title")),
+                predicates.add(criteriaBuilder.like(criteriaBuilder.lower(root.join("metadata").get("title")),
                         "%" + filter.getTitle().toLowerCase() + "%"));
             }
 

@@ -22,15 +22,14 @@ public class OmdbMapper {
             contentDto.setContentType(ContentType.SERIES);
         } else if ("episode".equalsIgnoreCase(omdbDto.getType())) {
             contentDto.setContentType(ContentType.EPISODE);
-        }
-        if (omdbDto.getSeason() != null) {
-                try { contentDto.setSeasonNo(Integer.parseInt(omdbDto.getSeason())); } catch(Exception e) {}
-        }
-        if (omdbDto.getEpisode() != null) {
-            try { contentDto.setEpisodeNo(Integer.parseInt(omdbDto.getEpisode())); } catch(Exception e) {}
-        }
-        else {
+        } else {
             contentDto.setContentType(ContentType.MOVIE);
+        }
+        if (omdbDto.getSeason() != null && !omdbDto.getSeason().equalsIgnoreCase("N/A")) {
+            try { contentDto.setSeasonNo(Integer.parseInt(omdbDto.getSeason())); } catch(Exception e) {}
+        }
+        if (omdbDto.getEpisode() != null && !omdbDto.getEpisode().equalsIgnoreCase("N/A")) {
+            try { contentDto.setEpisodeNo(Integer.parseInt(omdbDto.getEpisode())); } catch(Exception e) {}
         }
 
         MetadataRequestDto metaDto = new MetadataRequestDto();
@@ -47,9 +46,6 @@ public class OmdbMapper {
         metaDto.setAwards(omdbDto.getAwards());
         metaDto.setMetascore(omdbDto.getMetascore());
         metaDto.setBoxOffice(omdbDto.getBoxOffice());
-        metaDto.setDirector(omdbDto.getDirector());
-        metaDto.setWriter(omdbDto.getWriter());
-        metaDto.setActors(omdbDto.getActors());
         metaDto.setImdbRating(parseRating(omdbDto.getImdbRating()));
         metaDto.setReleased(parseDate(omdbDto.getReleased()));
         contentDto.setMetadata(metaDto);

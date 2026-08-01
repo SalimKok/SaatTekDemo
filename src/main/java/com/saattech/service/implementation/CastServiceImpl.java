@@ -31,7 +31,12 @@ public class CastServiceImpl implements CastService {
     }
 
     @Override
-    public CastResponseDto saveActor(CastRequestDto requestDto) {
+    public CastResponseDto saveCast(CastRequestDto requestDto) {
+        Cast existingCast = castRepository.findByName(requestDto.getName());
+
+        if (existingCast != null) {
+            return castMapper.toDto(existingCast);
+        }
         Cast cast = castMapper.toEntity(requestDto);
         Cast savedCast = castRepository.save(cast);
         return castMapper.toDto(savedCast);

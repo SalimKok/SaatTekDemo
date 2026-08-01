@@ -8,7 +8,7 @@ public interface CastService {
 
     List<CastResponseDto> getAllCasts();
 
-    CastResponseDto saveActor(CastRequestDto requestDto);
+    CastResponseDto saveCast(CastRequestDto requestDto);
 
     void deleteCast(Long id);
 
