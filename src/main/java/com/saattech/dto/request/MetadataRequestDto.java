@@ -28,7 +28,4 @@ public class MetadataRequestDto {
     private String boxOffice;
     private String metascore;
     private String imdbID;
-    private String director;
-    private String writer;
-    private String actors;
 }

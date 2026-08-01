@@ -16,7 +16,6 @@ public class Cast {
     private Long id;
 
     private String name;
-    private String poster;
 
     @Enumerated(EnumType.STRING)
     private EntityStatus status = EntityStatus.ACTIVE;

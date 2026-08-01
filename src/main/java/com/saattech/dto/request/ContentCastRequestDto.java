@@ -12,4 +12,6 @@ public class ContentCastRequestDto {
 
     @NotNull(message = "Cast role cannot be left blank.")
     private CastType role;
+
+    private String castName;
 }
