@@ -29,8 +29,6 @@ public class ContentMapper {
         dto.setCreatedAt(content.getCreatedAt());
 
         if (content.getMetadata() != null) {
-            dto.setTitle(content.getMetadata().getTitle());
-            dto.setPoster(content.getMetadata().getPoster());
             dto.setMetadata(metadataMapper.toDto(content.getMetadata()));
         }
 
