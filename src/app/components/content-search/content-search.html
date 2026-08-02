@@ -1,0 +1,133 @@
+<div class="search-container">
+  <h2>🎬 OMDb Content Search, Edit & Save</h2>
+
+  <div class="search-box">
+    <input 
+      type="text" 
+      [(ngModel)]="imdbId" 
+      placeholder="Enter IMDb ID (e.g. tt1375666)" 
+    />
+    <button class="search-btn" (click)="onSearch()" [disabled]="loading">
+      {{ loading ? 'Searching...' : '🔍 Fetch Movie' }}
+    </button>
+  </div>
+
+
+  @if (errorMessage) {
+    <div class="alert error">{{ errorMessage }}</div>
+  }
+  @if (successMessage) {
+    <div class="alert success">{{ successMessage }}</div>
+  }
+
+  
+  @if (movie) {
+    <div class="edit-form-card">
+      
+      
+      <div class="poster-col">
+        <img [src]="movie.metadata.poster" alt="Movie Poster" />
+        <div class="form-group" style="margin-top: 10px;">
+          <label>Poster URL:</label>
+          <input type="text" [(ngModel)]="movie.metadata.poster" placeholder="Poster Link" />
+        </div>
+      </div>
+
+     
+      <div class="fields-col"> 
+        <div class="form-row">
+          <div class="form-group flex-2">
+            <label>Title:</label>
+            <input type="text" [(ngModel)]="movie.metadata.title" />
+          </div>
+          <div class="form-group flex-1">
+            <label>Content Type:</label>
+            <select [(ngModel)]="movie.contentType">
+              <option value="MOVIE">MOVIE</option>
+              <option value="SERIES">SERIES</option>
+              <option value="SEASON">SEASON</option>
+              <option value="EPISODE">EPISODE</option>
+            </select>
+          </div>
+        </div>
+
+       
+        @if (movie.contentType === 'SEASON' || movie.contentType === 'EPISODE') {
+          <div class="form-row">
+            <div class="form-group flex-1">
+              <label>Season Number:</label>
+              <input type="number" [(ngModel)]="movie.seasonNo" placeholder="e.g. 1" />
+            </div>
+            @if (movie.contentType === 'EPISODE') {
+              <div class="form-group flex-1">
+                <label>Episode Number:</label>
+                <input type="number" [(ngModel)]="movie.episodeNo" placeholder="e.g. 5" />
+              </div>
+            }
+          </div>
+        }
+
+        <div class="form-row">
+          <div class="form-group flex-1">
+            <label>Genre:</label>
+            <input type="text" [(ngModel)]="movie.metadata.genre" />
+          </div>
+          <div class="form-group flex-1">
+            <label>Released Date:</label>
+            <input type="text" [(ngModel)]="movie.metadata.released" />
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group flex-1">
+            <label>IMDb Rating:</label>
+            <input type="number" step="0.1" [(ngModel)]="movie.metadata.imdbRating" />
+          </div>
+          <div class="form-group flex-1">
+            <label>Runtime:</label>
+            <input type="text" [(ngModel)]="movie.metadata.runtime" />
+          </div>
+          <div class="form-group flex-1">
+            <label>Rated:</label>
+            <input type="text" [(ngModel)]="movie.metadata.rated" />
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group flex-1">
+            <label>Language:</label>
+            <input type="text" [(ngModel)]="movie.metadata.language" />
+          </div>
+          <div class="form-group flex-1">
+            <label>Country:</label>
+            <input type="text" [(ngModel)]="movie.metadata.country" />
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>Plot:</label>
+          <textarea rows="4" [(ngModel)]="movie.metadata.plot"></textarea>
+        </div>
+
+        
+        <div class="casts-box">
+          <label><strong>👥 Casts:</strong></label>
+          <div class="casts-chips">
+            @for (cast of movie.casts; track $index) {
+              <div class="cast-chip">
+                <span class="role">{{ cast.role }}</span>
+                <span class="name">{{ cast.castName }}</span>
+              </div>
+            }
+          </div>
+        </div>
+
+        
+        <button class="save-btn" (click)="onSave()" [disabled]="loading">
+          💾 Save Movie with Edits to Database
+        </button>
+
+      </div>
+    </div>
+  }
+</div>
