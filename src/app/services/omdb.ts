@@ -10,12 +10,9 @@ import { environment } from '../../environments/environment';
 })
 export class OmdbService {
   private http = inject(HttpClient);
-  private apiUrl = environment.Url;
+  private apiUrl = environment.url;
 
   previewContent(imdbId: string): Observable<ContentDto> {
     return this.http.get<ContentDto>(`${this.apiUrl}/omdb/preview?imdbId=${imdbId}`);
-  }
-  saveContent(content: ContentDto): Observable<ContentDto> {
-    return this.http.post<ContentDto>(`${this.apiUrl}/contents`, content);
   }
 }

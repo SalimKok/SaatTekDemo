@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { OmdbService } from '../../services/omdb';
 import { ContentDto } from '../../models/content';
+import { ContentService } from '../../services/content';
 
 @Component({
   selector: 'app-content-search',
@@ -13,6 +14,7 @@ import { ContentDto } from '../../models/content';
 })
 export class ContentSearch {
   private omdbService = inject(OmdbService);
+  private contentService = inject(ContentService);
   private cdr = inject(ChangeDetectorRef);
 
   imdbId: string = ''; 
@@ -55,7 +57,7 @@ export class ContentSearch {
     this.successMessage = '';
     this.cdr.detectChanges();
 
-    this.omdbService.saveContent(this.movie).subscribe({
+    this.contentService.saveContent(this.movie).subscribe({
       next: (savedData) => {
         this.successMessage = `"${savedData.metadata.title}" and its cast members were successfully saved to the database!`;
         this.loading = false;
