@@ -8,6 +8,6 @@ public class CastRequestDto {
 
     @NotBlank(message = "cast name cannot be left blank.")
     private String name;
-
+    private String poster;
 }
 

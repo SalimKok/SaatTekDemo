@@ -14,7 +14,7 @@ import java.util.Optional;
 @Repository
 public interface ContentRepository extends JpaRepository<Content, Long>, JpaSpecificationExecutor<Content> {
 
-    Page<Content> findByStatus(EntityStatus status, Pageable pageable);
+    Optional<Content> findByMetadata_ImdbID(String imdbID);
 
     Optional<Content> findByIdAndStatus(Long id, EntityStatus status);
 }

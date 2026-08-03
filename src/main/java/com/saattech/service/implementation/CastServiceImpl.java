@@ -9,6 +9,10 @@ import com.saattech.repository.CastRepository;
 import com.saattech.exception.ResourceNotFoundException;
 import com.saattech.service.CastService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
@@ -22,12 +26,21 @@ public class CastServiceImpl implements CastService {
     private final CastMapper castMapper;
 
     @Override
-    public List<CastResponseDto> getAllCasts() {
-        List<Cast> casts = castRepository.findByStatus(EntityStatus.ACTIVE);
-
-        return casts.stream()
-                .map(castMapper::toDto)
-                .collect(Collectors.toList());
+    public Page<CastResponseDto> getAllCasts(String name, Pageable pageable) {
+        if (pageable.getSort().isUnsorted()) {
+            pageable = PageRequest.of(
+                    pageable.getPageNumber(),
+                    pageable.getPageSize(),
+                    Sort.by(Sort.Direction.DESC, "id")
+            );
+        }
+        Page<Cast> castPage;
+        if (name != null && !name.trim().isEmpty()) {
+            castPage = castRepository.findByNameContainingIgnoreCaseAndStatus(name.trim(), EntityStatus.ACTIVE, pageable);
+        } else {
+            castPage = castRepository.findByStatus(EntityStatus.ACTIVE, pageable);
+        }
+        return castPage.map(castMapper::toDto);
     }
 
     @Override

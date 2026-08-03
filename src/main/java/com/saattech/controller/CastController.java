@@ -5,6 +5,8 @@ import com.saattech.dto.response.CastResponseDto;
 import com.saattech.service.CastService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -19,8 +21,10 @@ public class CastController {
 
 
     @GetMapping
-    public ResponseEntity<List<CastResponseDto>> getAllCasts() {
-        List<CastResponseDto> response = castService.getAllCasts();
+    public ResponseEntity<Page<CastResponseDto>> getAllCasts(
+            @RequestParam(required = false) String name,
+            Pageable pageable) {
+        Page<CastResponseDto> response = castService.getAllCasts(name, pageable);
         return ResponseEntity.ok(response);
     }
 

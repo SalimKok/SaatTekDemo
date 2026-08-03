@@ -58,8 +58,11 @@ public class ContentController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<ContentResponseDto> updateContent(@PathVariable Long id,@Valid @RequestBody ContentRequestDto requestDto) {
-        ContentResponseDto updatedContent = contentService.updateContent(id, requestDto);
+    public ResponseEntity<ContentResponseDto> updateContent(
+            @PathVariable Long id,
+            @Valid @RequestBody ContentRequestDto requestDto,
+            @RequestParam(defaultValue = "false") boolean updateChildren) {
+        ContentResponseDto updatedContent = contentService.updateContent(id, requestDto, updateChildren);
         return ResponseEntity.ok(updatedContent);
     }
 }

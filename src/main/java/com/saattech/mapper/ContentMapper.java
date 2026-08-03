@@ -3,7 +3,10 @@ package com.saattech.mapper;
 import com.saattech.dto.request.ContentRequestDto;
 import com.saattech.dto.response.ContentCastResponseDto;
 import com.saattech.dto.response.ContentResponseDto;
+import com.saattech.entity.Cast;
 import com.saattech.entity.Content;
+import com.saattech.entity.ContentCast;
+import com.saattech.enums.CastType;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import java.util.List;
@@ -76,5 +79,15 @@ public class ContentMapper {
         if (dto.getEpisodeNo() != null) content.setEpisodeNo(dto.getEpisodeNo());
         if (dto.getContentType() != null) content.setContentType(dto.getContentType());
 
+    }
+
+    public ContentCast toContentCast(Content content, Cast cast, CastType role) {
+        if (content == null || cast == null || role == null) return null;
+
+        ContentCast contentCast = new ContentCast();
+        contentCast.setContent(content);
+        contentCast.setCast(cast);
+        contentCast.setRole(role);
+        return contentCast;
     }
 }
