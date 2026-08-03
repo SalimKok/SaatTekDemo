@@ -12,4 +12,5 @@ export interface ContentDto {
   parentId?: number;
   casts: ContentCastDto[];
   metadata: MetadataDto;
+   subContents?: ContentDto[];
 }

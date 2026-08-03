@@ -1,11 +1,14 @@
 <div class="list-container">
   <div class="header-section">
     <div>
-      <h2>🎥 Saved Movies & Series</h2>
+      <h2>Saved Movies & Series</h2>
       <p class="subtitle">Total items in database: <strong>{{ totalElements }}</strong></p>
     </div>
-    <button class="refresh-btn" (click)="fetchMovies(currentPage)">🔄 Refresh List</button>
+    <button class="refresh-btn" (click)="fetchMovies(currentPage)">Refresh List</button>
   </div>
+
+  <!-- AYRI VE MODÜLER FİLTRE BİLEŞENİ -->
+  <app-content-filter (filterChanged)="onFilterChanged($event)"></app-content-filter>
 
   @if (loading) {
     <div class="loading-box">
@@ -19,8 +22,7 @@
 
   @if (!loading && movies.length === 0) {
     <div class="empty-state">
-      <p>No content saved in database yet.</p>
-      <p>Click on <strong>"Search & Add Movie"</strong> in the navigation bar to add a new movie!</p>
+      <p>No content found matching your filter criteria.</p>
     </div>
   }
 
@@ -38,15 +40,14 @@
           <p class="plot-snippet">{{ movie.metadata.plot }}</p>
 
           <div class="card-actions">
-            <button class="edit-btn" (click)="openEditModal(movie)">✏️ Edit</button>
-            <button class="delete-btn" (click)="onDelete(movie.id)">🗑️ Delete</button>
+            <button class="edit-btn" (click)="openEditModal(movie)">Edit</button>
+            <button class="delete-btn" (click)="onDelete(movie.id)">Delete</button>
           </div>
         </div>
       </div>
     }
   </div>
 
-  <!-- Pagination Controls -->
   @if (totalElements > 0) {
     <div class="pagination-section">
       <button 

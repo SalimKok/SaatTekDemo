@@ -1,13 +1,13 @@
 import { TestBed } from '@angular/core/testing';
 
-import { ContentService } from './content';
+import { CastService } from './castservice';
 
-describe('Content', () => {
-  let service: ContentService;
+describe('CastService', () => {
+  let service: CastService;
 
   beforeEach(() => {
     TestBed.configureTestingModule({});
-    service = TestBed.inject(ContentService);
+    service = TestBed.inject(CastService);
   });
 
   it('should be created', () => {

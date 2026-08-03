@@ -1,14 +1,16 @@
 import { Component, inject, OnInit, OnDestroy, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Subject, takeUntil } from 'rxjs';
-import { ContentService } from '../../services/content';
+import { ContentService } from '../../services/contentService';
 import { ContentDto } from '../../models/content';
+import { ContentFilterDto } from '../../models/content-filter';
+import { ContentFilter } from '../content-filter/content-filter'; // <-- YENİ IMPORT
 import { EditModal } from '../edit-modal/edit-modal';
 
 @Component({
   selector: 'app-content-list',
   standalone: true,
-  imports: [CommonModule, EditModal],
+  imports: [CommonModule, ContentFilter, EditModal], // <-- ContentFilter eklendi
   templateUrl: './content-list.html',
   styleUrl: './content-list.css',
 })
@@ -22,9 +24,11 @@ export class ContentList implements OnInit, OnDestroy {
   errorMessage: string = '';
 
   currentPage: number = 0;
-  pageSize: number = 8;
+  pageSize: number = 7;
   totalPages: number = 0;
   totalElements: number = 0;
+
+  activeFilter?: ContentFilterDto;
 
   ngOnInit(): void {
     this.fetchMovies(this.currentPage);
@@ -40,7 +44,7 @@ export class ContentList implements OnInit, OnDestroy {
     this.errorMessage = '';
     this.cdr.detectChanges();
 
-    this.contentService.getAllContents(page, this.pageSize)
+    this.contentService.getAllContents(page, this.pageSize, this.activeFilter)
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (response) => {
@@ -58,6 +62,13 @@ export class ContentList implements OnInit, OnDestroy {
           console.error(err);
         }
       });
+  }
+
+  // Filtre bileşeni bir değişiklik emit ettiğinde tetiklenir
+  onFilterChanged(filter: ContentFilterDto): void {
+    this.activeFilter = filter;
+    this.currentPage = 0;
+    this.fetchMovies(0);
   }
 
   onNextPage(): void {

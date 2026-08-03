@@ -1,24 +1,24 @@
-import { Component, Input, Output, EventEmitter, inject, ChangeDetectorRef, OnChanges } from '@angular/core';
+import { Component, Input, Output, EventEmitter, inject, ChangeDetectorRef, OnChanges, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Subject, takeUntil } from 'rxjs';
-import { ContentService } from '../../services/content';
+import { ContentService } from '../../services/contentService';
 import { ContentDto } from '../../models/content';
+import { ContentCastEditor } from '../content-cast-editor/content-cast-editor';
 
 @Component({
   selector: 'app-edit-modal',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, ContentCastEditor],
   templateUrl: './edit-modal.html',
   styleUrl: './edit-modal.css'
 })
-export class EditModal implements OnChanges {
+export class EditModal implements OnChanges, OnDestroy {
   private contentService = inject(ContentService);
   private cdr = inject(ChangeDetectorRef);
   private destroy$ = new Subject<void>();
 
   @Input() movie: ContentDto | null = null;
-
   @Output() closed = new EventEmitter<void>();
   @Output() saved = new EventEmitter<void>();
 
@@ -26,11 +26,15 @@ export class EditModal implements OnChanges {
   editLoading: boolean = false;
   editErrorMessage: string = '';
 
+  // 1. Yeni State: Alt içerikleri de güncelleme seçeneği
+  updateChildren: boolean = false;
+
   ngOnChanges(): void {
     if (this.movie) {
       this.editingMovie = JSON.parse(JSON.stringify(this.movie));
       this.editErrorMessage = '';
       this.editLoading = false;
+      this.updateChildren = false; // Modal açıldığında sıfırlanır
     }
   }
 
@@ -50,10 +54,10 @@ export class EditModal implements OnChanges {
   }
 
   close(): void {
-    this.closed.emit(); 
+    this.closed.emit();
   }
 
-  save(): void {
+    save(): void {
     if (!this.editingMovie || !this.editingMovie.id) return;
 
     this.editLoading = true;
@@ -78,19 +82,19 @@ export class EditModal implements OnChanges {
         imdbVotes: this.editingMovie.metadata.imdbVotes,
         imdbID: this.editingMovie.metadata.imdbID
       },
-      casts: (this.editingMovie.casts || []).map((c: any) => ({
-        castId: c.cast?.id ?? c.castId ?? c.id,
-        role: c.role,
-        castName: c.cast?.name || c.castName
-      }))
+      // YENİ EKLENEN: Cast listesini Backend'in beklediği formatta DTO'ya ekliyoruz
+      casts: this.editingMovie.casts?.map(c => ({
+        castId: c.cast?.id,
+        role: c.role
+      })) || []
     };
 
-    this.contentService.updateContent(this.editingMovie.id, payload as any)
+    this.contentService.updateContent(this.editingMovie.id, payload as any, this.updateChildren)
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: () => {
           this.editLoading = false;
-          this.saved.emit(); 
+          this.saved.emit();
         },
         error: (err) => {
           this.editErrorMessage = err.error?.message || 'Failed to update movie!';
@@ -99,4 +103,5 @@ export class EditModal implements OnChanges {
         }
       });
   }
+
 }

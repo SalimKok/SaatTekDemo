@@ -1,6 +1,6 @@
 import { TestBed } from '@angular/core/testing';
 
-import { OmdbService } from './omdb';
+import { OmdbService } from './omdbService';
 
 describe('Omdb', () => {
   let service: OmdbService;
