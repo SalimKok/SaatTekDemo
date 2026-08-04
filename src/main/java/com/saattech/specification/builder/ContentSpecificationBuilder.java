@@ -4,6 +4,7 @@ import com.saattech.entity.Content;
 import com.saattech.enums.EntityStatus;
 import com.saattech.specification.dto.ContentFilterDto;
 import org.springframework.data.jpa.domain.Specification;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import jakarta.persistence.criteria.Predicate;
@@ -21,13 +22,36 @@ public class ContentSpecificationBuilder {
             }
 
             if (filter.getTitle() != null && !filter.getTitle().trim().isEmpty()) {
-                predicates.add(criteriaBuilder.like(criteriaBuilder.lower(root.get("title")),
+                predicates.add(criteriaBuilder.like(criteriaBuilder.lower(root.join("metadata").get("title")),
                         "%" + filter.getTitle().toLowerCase() + "%"));
             }
 
             if (filter.getContentType() != null) {
                 predicates.add(criteriaBuilder.equal(root.get("contentType"), filter.getContentType()));
             }
+
+
+            if (filter.getGenre() != null && !filter.getGenre().trim().isEmpty()) {
+                predicates.add(criteriaBuilder.like(
+                        criteriaBuilder.lower(root.join("metadata").get("genre")),
+                        "%" + filter.getGenre().toLowerCase().trim() + "%"));
+            }
+
+            if (filter.getMinRating() != null) {
+                predicates.add(criteriaBuilder.greaterThanOrEqualTo(
+                        root.join("metadata").get("imdbRating"),
+                        filter.getMinRating()));
+            }
+
+            if (filter.getYear() != null) {
+                LocalDate startOfYear = LocalDate.of(filter.getYear(), 1, 1);
+                LocalDate endOfYear = LocalDate.of(filter.getYear(), 12, 31);
+                predicates.add(criteriaBuilder.between(
+                        root.join("metadata").get("released"),
+                        startOfYear,
+                        endOfYear));
+            }
+
             return criteriaBuilder.and(predicates.toArray(new Predicate[0]));
         };
     }

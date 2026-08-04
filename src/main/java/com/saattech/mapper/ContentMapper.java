@@ -1,8 +1,12 @@
 package com.saattech.mapper;
 
 import com.saattech.dto.request.ContentRequestDto;
+import com.saattech.dto.response.ContentCastResponseDto;
 import com.saattech.dto.response.ContentResponseDto;
+import com.saattech.entity.Cast;
 import com.saattech.entity.Content;
+import com.saattech.entity.ContentCast;
+import com.saattech.enums.CastType;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import java.util.List;
@@ -28,11 +32,8 @@ public class ContentMapper {
         dto.setCreatedAt(content.getCreatedAt());
 
         if (content.getMetadata() != null) {
-            dto.setTitle(content.getMetadata().getTitle());
-            dto.setPoster(content.getMetadata().getPoster());
             dto.setMetadata(metadataMapper.toDto(content.getMetadata()));
         }
-
 
         if (content.getSubContents() != null && !content.getSubContents().isEmpty()){
             List<ContentResponseDto> subDtoList = content.getSubContents().stream()
@@ -42,6 +43,19 @@ public class ContentMapper {
             dto.setSubContents(subDtoList);
         }
 
+        if (content.getCastMembers() != null && !content.getCastMembers().isEmpty()) {
+            List<ContentCastResponseDto> contentCastDtoList = content.getCastMembers().stream()
+                    .map(contentCast -> {
+                        ContentCastResponseDto ccDto = new ContentCastResponseDto();
+                        ccDto.setId(contentCast.getId());
+                        ccDto.setRole(contentCast.getRole());
+                        ccDto.setCast(castMapper.toDto(contentCast.getCast()));
+                        return ccDto;
+                    })
+                    .collect(Collectors.toList());
+
+            dto.setCasts(contentCastDtoList);
+        }
         return dto;
     }
 
@@ -65,5 +79,15 @@ public class ContentMapper {
         if (dto.getEpisodeNo() != null) content.setEpisodeNo(dto.getEpisodeNo());
         if (dto.getContentType() != null) content.setContentType(dto.getContentType());
 
+    }
+
+    public ContentCast toContentCast(Content content, Cast cast, CastType role) {
+        if (content == null || cast == null || role == null) return null;
+
+        ContentCast contentCast = new ContentCast();
+        contentCast.setContent(content);
+        contentCast.setCast(cast);
+        contentCast.setRole(role);
+        return contentCast;
     }
 }

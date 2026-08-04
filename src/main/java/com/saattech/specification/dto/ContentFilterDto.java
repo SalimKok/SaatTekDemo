@@ -9,4 +9,7 @@ public class ContentFilterDto {
     private String title;
     private ContentType contentType;
     private EntityStatus status;
+    private String genre;
+    private Double minRating;
+    private Integer year;
 }

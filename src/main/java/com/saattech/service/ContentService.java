@@ -20,7 +20,7 @@ public interface ContentService {
 
     void removeCastFromContent(Long contentId, Long castId);
 
-    ContentResponseDto updateContent(Long id, ContentRequestDto requestDto);
+    ContentResponseDto updateContent(Long id, ContentRequestDto requestDto, boolean updateChildren);
 
     ContentResponseDto getContentById(Long id);
 

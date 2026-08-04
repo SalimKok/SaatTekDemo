@@ -45,9 +45,6 @@ public class MetadataMapper {
         metadata.setBoxOffice(requestDto.getBoxOffice());
         metadata.setMetascore(requestDto.getMetascore());
         metadata.setImdbID(requestDto.getImdbID());
-        metadata.setDirector(requestDto.getDirector());
-        metadata.setWriter(requestDto.getWriter());
-        metadata.setActors(requestDto.getActors());
         return metadata;
     }
 

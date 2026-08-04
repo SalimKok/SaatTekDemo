@@ -2,6 +2,7 @@ package com.saattech.service.implementation;
 
 import com.saattech.dto.request.ContentCastRequestDto;
 import com.saattech.dto.request.ContentRequestDto;
+import com.saattech.dto.request.MetadataRequestDto;
 import com.saattech.dto.response.ContentResponseDto;
 import com.saattech.entity.Cast;
 import com.saattech.entity.Content;
@@ -9,6 +10,7 @@ import com.saattech.entity.ContentCast;
 import com.saattech.entity.Metadata;
 import com.saattech.enums.CastType;
 import com.saattech.enums.EntityStatus;
+import com.saattech.exception.DuplicateResourceException;
 import com.saattech.mapper.ContentMapper;
 import com.saattech.repository.CastRepository;
 import com.saattech.repository.ContentRepository;
@@ -19,11 +21,14 @@ import com.saattech.specification.builder.ContentSpecificationBuilder;
 import com.saattech.specification.dto.ContentFilterDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -40,6 +45,14 @@ public class ContentServiceImpl implements ContentService {
 
         Specification<Content> spec = ContentSpecificationBuilder.build(filterDto);
 
+        if (pageable.getSort().isUnsorted()) {
+            pageable = PageRequest.of(
+                    pageable.getPageNumber(),
+                    pageable.getPageSize(),
+                    Sort.by(Sort.Direction.DESC, "id")
+            );
+        }
+
         Page<Content> contentPage = contentRepository.findAll(spec, pageable);
         return contentPage.map(contentMapper::toDto);
     }
@@ -55,6 +68,29 @@ public class ContentServiceImpl implements ContentService {
     @Transactional
     @Override
     public ContentResponseDto saveContent(ContentRequestDto requestDto) {
+        String imdbId = (requestDto.getMetadata() != null) ? requestDto.getMetadata().getImdbID() : null;
+
+        if (imdbId != null && !imdbId.trim().isEmpty()) {
+            Optional<Content> existingOpt = contentRepository.findByMetadata_ImdbID(imdbId.trim());
+            if (existingOpt.isPresent()) {
+                Content existingContent = existingOpt.get();
+
+                if (existingContent.getStatus() == EntityStatus.ACTIVE) {
+                    throw new DuplicateResourceException("This movie already exists in active records! IMDB ID: " + imdbId);
+                }
+
+                if (existingContent.getStatus() == EntityStatus.DELETED) {
+                    existingContent.setStatus(EntityStatus.ACTIVE);
+
+                    if (requestDto.getMetadata() != null) {
+                        metadataService.updateMetadata(existingContent.getMetadata(), requestDto.getMetadata());
+                    }
+
+                    Content restoredContent = contentRepository.save(existingContent);
+                    return contentMapper.toDto(restoredContent);
+                }
+            }
+        }
 
         Content parent = null;
         if (requestDto.getParentId() != null) {
@@ -86,11 +122,7 @@ public class ContentServiceImpl implements ContentService {
         boolean alreadyExists = content.getCastMembers().stream()
                 .anyMatch(cc -> cc.getCast().getId().equals(castId) && cc.getRole() == role);
 
-        if (!alreadyExists) {
-            ContentCast contentCast = new ContentCast();
-            contentCast.setContent(content);
-            contentCast.setCast(cast);
-            contentCast.setRole(role);
+        if (!alreadyExists) { ContentCast contentCast = contentMapper.toContentCast(content, cast, role);
             content.getCastMembers().add(contentCast);
             contentRepository.save(content);
         }
@@ -116,10 +148,7 @@ public class ContentServiceImpl implements ContentService {
                 Cast cast = castRepository.findById(castDto.getCastId())
                         .orElseThrow(() -> new ResourceNotFoundException("Person not found! ID: " + castDto.getCastId()));
 
-                ContentCast contentCast = new ContentCast();
-                contentCast.setContent(content);
-                contentCast.setCast(cast);
-                contentCast.setRole(castDto.getRole());
+                ContentCast contentCast = contentMapper.toContentCast(content, cast, castDto.getRole());
                 finalCasts.add(contentCast);
             }
         }
@@ -139,20 +168,53 @@ public class ContentServiceImpl implements ContentService {
         return content;
     }
 
+    private void updateChildrenRecursively(Content parent, ContentRequestDto requestDto) {
+        if (parent.getSubContents() == null || parent.getSubContents().isEmpty() || requestDto == null) {
+            return;
+        }
+
+        MetadataRequestDto childMetaDto = null;
+        if (requestDto.getMetadata() != null) {
+            childMetaDto = new MetadataRequestDto();
+            org.springframework.beans.BeanUtils.copyProperties(requestDto.getMetadata(), childMetaDto);
+            childMetaDto.setTitle(null);
+        }
+        for (Content child : parent.getSubContents()) {
+            if (child.getStatus() == EntityStatus.ACTIVE) {
+
+                if (childMetaDto != null) {
+                    if (child.getMetadata() == null) {
+                        child.setMetadata(metadataService.createMetadata(childMetaDto));
+                    } else {
+                        metadataService.updateMetadata(child.getMetadata(), childMetaDto);
+                    }
+                }
+
+                if (requestDto.getCasts() != null) {
+                    child.getCastMembers().clear();
+                    for (ContentCastRequestDto castDto : requestDto.getCasts()) {
+                        Cast cast = castRepository.findById(castDto.getCastId())
+                                .orElseThrow(() -> new ResourceNotFoundException("Person not found! ID: " + castDto.getCastId()));
+                        ContentCast contentCast = contentMapper.toContentCast(child, cast, castDto.getRole());
+                        child.getCastMembers().add(contentCast);
+                    }
+                }
+
+                updateChildrenRecursively(child, requestDto);
+            }
+        }
+    }
     @Transactional
     @Override
-    public ContentResponseDto updateContent(Long id, ContentRequestDto requestDto) {
+    public ContentResponseDto updateContent(Long id, ContentRequestDto requestDto, boolean updateChildren) {
         Content content = contentRepository.findByIdAndStatus(id, EntityStatus.ACTIVE)
                 .orElseThrow(() -> new ResourceNotFoundException("Content not found! ID: " + id));
-
         contentMapper.updateEntityFromDto(requestDto, content);
-
         if (requestDto.getParentId() != null) {
             Content parent = contentRepository.findByIdAndStatus(requestDto.getParentId(), EntityStatus.ACTIVE)
                     .orElseThrow(() -> new ResourceNotFoundException("Parent content not found! ID: " + requestDto.getParentId()));
             content.setParentContent(parent);
         }
-
         if (requestDto.getMetadata() != null) {
             if (content.getMetadata() == null) {
                 Metadata metadata = metadataService.createMetadata(requestDto.getMetadata());
@@ -166,14 +228,16 @@ public class ContentServiceImpl implements ContentService {
             for (ContentCastRequestDto castDto : requestDto.getCasts()) {
                 Cast cast = castRepository.findById(castDto.getCastId())
                         .orElseThrow(() -> new ResourceNotFoundException("Person not found! ID: " + castDto.getCastId()));
-
-                ContentCast contentCast = new ContentCast();
-                contentCast.setContent(content);
-                contentCast.setCast(cast);
-                contentCast.setRole(castDto.getRole());
+                ContentCast contentCast = contentMapper.toContentCast(content, cast, castDto.getRole());
                 content.getCastMembers().add(contentCast);
             }
         }
-        return contentMapper.toDto(content);
+
+        if (updateChildren) {
+            updateChildrenRecursively(content, requestDto);
+        }
+        // ----------------------------------------------------------------------
+        Content savedContent = contentRepository.save(content);
+        return contentMapper.toDto(savedContent);
     }
 }

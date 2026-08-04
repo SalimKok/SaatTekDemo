@@ -16,7 +16,7 @@ public class CastMapper {
         CastResponseDto dto = new CastResponseDto();
         dto.setId(cast.getId());
         dto.setName(cast.getName());
-
+        dto.setPoster(cast.getPoster());
         return dto;
     }
 
@@ -27,7 +27,7 @@ public class CastMapper {
 
         Cast cast = new Cast();
         cast.setName(requestDto.getName());
-
+        cast.setPoster(requestDto.getPoster());
         return cast;
     }
 
@@ -35,5 +35,6 @@ public class CastMapper {
         if (dto == null || cast == null) return;
 
         if (dto.getName() != null) cast.setName(dto.getName());
+        if (dto.getPoster() != null) cast.setPoster(dto.getPoster());
     }
 }
