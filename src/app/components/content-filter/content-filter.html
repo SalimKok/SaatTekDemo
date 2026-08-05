@@ -1,20 +1,21 @@
 <div class="card filter-card">
-  <div class="filter-row">
-    
-    <!-- Başlığa Göre Arama -->
-    <div class="filter-group flex-2">
-      <label for="filterTitle">Search by Title:</label>
+  <div class="filter-header">
+    <h3>Filters</h3>
+  </div>
+
+  <div class="filter-vertical-form">
+    <div class="filter-group">
+      <label for="filterTitle">Title:</label>
       <input 
         id="filterTitle"
         type="text" 
         [(ngModel)]="filter.title" 
         (keyup.enter)="onSearch()"
-        placeholder="e.g. Breaking Bad, Interstellar..." 
+        placeholder="e.g. Breaking Bad..." 
       />
     </div>
 
-    <!-- Tür (Genre) -->
-    <div class="filter-group flex-1">
+    <div class="filter-group">
       <label for="filterGenre">Genre:</label>
       <input 
         id="filterGenre"
@@ -25,8 +26,7 @@
       />
     </div>
 
-    <!-- İçerik Türü (Content Type) -->
-    <div class="filter-group flex-1">
+    <div class="filter-group">
       <label for="filterType">Content Type:</label>
       <select 
         id="filterType" 
@@ -40,28 +40,26 @@
       </select>
     </div>
 
-    <!-- Minimum IMDb Puanı -->
-    <div class="filter-group" style="width: 130px; flex: none;">
+    <div class="filter-group">
       <label for="filterRating">Min Rating:</label>
       <select 
         id="filterRating" 
         [(ngModel)]="filter.minRating" 
         (ngModelChange)="onSearch()">
         <option [ngValue]="null">Any Rating</option>
-        <option [ngValue]="1">1.0+</option>
-        <option [ngValue]="2">2.0+</option>
-        <option [ngValue]="3">3.0+</option>
-        <option [ngValue]="4">4.0+</option>
-        <option [ngValue]="5">5.0+</option>
-        <option [ngValue]="6">6.0+</option>
-        <option [ngValue]="7">7.0+</option>
-        <option [ngValue]="8">8.0+</option>
-        <option [ngValue]="9">9.0+</option>
+        <option [ngValue]="1">⭐ 1.0+</option>
+        <option [ngValue]="2">⭐ 2.0+</option>
+        <option [ngValue]="3">⭐ 3.0+</option>
+        <option [ngValue]="4">⭐ 4.0+</option>
+        <option [ngValue]="5">⭐ 5.0+</option>
+        <option [ngValue]="6">⭐ 6.0+</option>
+        <option [ngValue]="7">⭐ 7.0+</option>
+        <option [ngValue]="8">⭐ 8.0+</option>
+        <option [ngValue]="9">⭐ 9.0+</option>
       </select>
     </div>
 
-    <!-- Çıkış Yılı -->
-    <div class="filter-group" style="width: 110px; flex: none;">
+    <div class="filter-group">
       <label for="filterYear">Year:</label>
       <input 
         id="filterYear"
@@ -74,8 +72,7 @@
       />
     </div>
 
-    <!-- Durum (Status) -->
-    <div class="filter-group" style="width: 130px; flex: none;">
+    <div class="filter-group">
       <label for="filterStatus">Status:</label>
       <select 
         id="filterStatus" 
@@ -86,7 +83,6 @@
       </select>
     </div>
 
-    <!-- Aksiyon Butonları -->
     <div class="filter-actions">
       <button type="button" class="btn-primary" (click)="onSearch()">
         Filter

@@ -26,7 +26,6 @@ export class EditModal implements OnChanges, OnDestroy {
   editLoading: boolean = false;
   editErrorMessage: string = '';
 
-  // 1. Yeni State: Alt içerikleri de güncelleme seçeneği
   updateChildren: boolean = false;
 
   ngOnChanges(): void {
@@ -34,7 +33,7 @@ export class EditModal implements OnChanges, OnDestroy {
       this.editingMovie = JSON.parse(JSON.stringify(this.movie));
       this.editErrorMessage = '';
       this.editLoading = false;
-      this.updateChildren = false; // Modal açıldığında sıfırlanır
+      this.updateChildren = false; 
     }
   }
 
@@ -82,7 +81,7 @@ export class EditModal implements OnChanges, OnDestroy {
         imdbVotes: this.editingMovie.metadata.imdbVotes,
         imdbID: this.editingMovie.metadata.imdbID
       },
-      // YENİ EKLENEN: Cast listesini Backend'in beklediği formatta DTO'ya ekliyoruz
+  
       casts: this.editingMovie.casts?.map(c => ({
         castId: c.cast?.id,
         role: c.role

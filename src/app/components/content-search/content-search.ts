@@ -163,7 +163,7 @@ export class ContentSearch implements OnInit{
       const generatedSeasons: any[] = [];
       for (let s = 1; s <= (this.seasonCount || 1); s++) {
         const episodes: any[] = [];
-        // O sezona ait girilen bölüm sayısı:
+     
         const epCountForThisSeason = this.seasonEpisodes[s - 1] || 1;
         for (let e = 1; e <= epCountForThisSeason; e++) {
           episodes.push({
@@ -238,7 +238,7 @@ export class ContentSearch implements OnInit{
     });
   }
 
-  // Sezon sayısı değiştikçe input kutularını dinamik günceller
+  
   onSeasonCountChange(): void {
     const count = Math.max(1, Math.min(50, this.seasonCount || 1));
     this.seasonCount = count;
@@ -249,7 +249,7 @@ export class ContentSearch implements OnInit{
       this.seasonEpisodes = this.seasonEpisodes.slice(0, count);
     }
   }
-  // Toplam bölüm sayısını hesaplar
+
   getTotalEpisodes(): number {
     return this.seasonEpisodes.reduce((sum, val) => sum + (Number(val) || 0), 0);
   }

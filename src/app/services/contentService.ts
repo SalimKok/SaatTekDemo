@@ -49,6 +49,10 @@ export class ContentService {
     return this.http.get<PageResponse<ContentDto>>(this.apiUrl, { params });
   }
 
+ getContentById(id: number): Observable<ContentDto> {
+    return this.http.get<ContentDto>(`${this.apiUrl}/${id}`);
+  }
+
   saveContent(content: ContentDto): Observable<ContentDto> {
     return this.http.post<ContentDto>(this.apiUrl, content);
   }
@@ -62,8 +66,6 @@ export class ContentService {
     return this.http.put<ContentDto>(`${this.apiUrl}/${id}`, content, { params });
   }
 
-
-   
   addCastToContent(contentId: number, castId: number, role: CastType): Observable<void> {
     const params = new HttpParams().set('role', role);
     return this.http.post<void>(`${this.apiUrl}/${contentId}/casts/${castId}`, null, { params });
