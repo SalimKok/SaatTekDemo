@@ -5,10 +5,22 @@
       <h2>Create New Content</h2>
       <p class="subtitle">Enter content details manually or autofill instantly using an IMDb ID.</p>
     </div>
-    <button type="button" class="btn-secondary" (click)="onResetForm()"> Clear Form</button>
+    <div style="display: flex; gap: 10px; align-items: center;">
+      <button type="button" class="btn-primary" (click)="showBulkModal = true">
+        Bulk Import
+      </button>
+      <button type="button" class="btn-secondary" (click)="onResetForm()">
+        Clear Form
+      </button>
+    </div>
   </div>
 
-  
+  <app-bulk-import-modal 
+    [isOpen]="showBulkModal" 
+    (closed)="showBulkModal = false"
+    (completed)="onBulkImportCompleted($event)">
+  </app-bulk-import-modal>
+
   @if (errorMessage) {
     <div class="alert error">{{ errorMessage }}</div>
   }

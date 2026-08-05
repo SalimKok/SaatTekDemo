@@ -4,15 +4,17 @@ import { FormsModule } from '@angular/forms';
 import { OmdbService } from '../../services/omdbService';
 import { ContentService } from '../../services/contentService';
 import { ContentDto } from '../../models/content';
+import { BulkImportModal } from '../bulk-import-modal/bulk-import-modal';
 
 @Component({
   selector: 'app-content-search',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, BulkImportModal],
   templateUrl: './content-search.html',
   styleUrl: './content-search.css',
 })
 export class ContentSearch implements OnInit{
+
   private omdbService = inject(OmdbService);
   private contentService = inject(ContentService);
   private cdr = inject(ChangeDetectorRef);
@@ -28,7 +30,13 @@ export class ContentSearch implements OnInit{
   errorMessage: string = '';
   successMessage: string = '';
 
+  showBulkModal: boolean = false;
+
   movie: ContentDto = this.getEmptyMovie();
+
+  onBulkImportCompleted(result: any): void {
+    this.loadPotentialParents(); 
+  }
 
   private getEmptyMovie(): ContentDto {
     return {
