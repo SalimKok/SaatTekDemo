@@ -4,6 +4,7 @@ import com.saattech.dto.request.ContentCastRequestDto;
 import com.saattech.dto.request.ContentRequestDto;
 import com.saattech.dto.request.MetadataRequestDto;
 import com.saattech.dto.response.ContentResponseDto;
+import com.saattech.elasticsearch.service.ContentSearchService;
 import com.saattech.entity.Cast;
 import com.saattech.entity.Content;
 import com.saattech.entity.ContentCast;
@@ -40,6 +41,7 @@ public class ContentServiceImpl implements ContentService {
     private final ContentMapper contentMapper;
     private final CastRepository castRepository;
     private final MetadataService metadataService;
+    private final ContentSearchService contentSearchService;
 
     @Override
     public Page<ContentResponseDto> getAllContents(ContentFilterDto filterDto, Pageable pageable) {
@@ -101,6 +103,8 @@ public class ContentServiceImpl implements ContentService {
         }
         Content content = createContentRecursively(requestDto, parent);
         Content savedContent = contentRepository.save(content);
+
+        contentSearchService.indexContent(savedContent);
         return contentMapper.toDto(savedContent);
     }
 
@@ -130,6 +134,8 @@ public class ContentServiceImpl implements ContentService {
         Content content = contentRepository.findByIdAndStatus(id, EntityStatus.ACTIVE)
                 .orElseThrow(() -> new ResourceNotFoundException("Content to delete not found! ID: " + id));
         softDeleteRecursively(content);
+
+        contentSearchService.deleteContentIndex(id);
     }
 
     private void softDeleteRecursively(Content content) {
@@ -269,6 +275,8 @@ public class ContentServiceImpl implements ContentService {
         }
         // ----------------------------------------------------------------------
         Content savedContent = contentRepository.save(content);
+        // 🔄 Güncellenen içeriği Elasticsearch'te de güncelle
+        contentSearchService.indexContent(savedContent);
         return contentMapper.toDto(savedContent);
     }
 }
