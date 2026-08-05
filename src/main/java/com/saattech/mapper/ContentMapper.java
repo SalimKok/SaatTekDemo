@@ -7,6 +7,7 @@ import com.saattech.entity.Cast;
 import com.saattech.entity.Content;
 import com.saattech.entity.ContentCast;
 import com.saattech.enums.CastType;
+import com.saattech.enums.EntityStatus;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import java.util.List;
@@ -37,6 +38,7 @@ public class ContentMapper {
 
         if (content.getSubContents() != null && !content.getSubContents().isEmpty()){
             List<ContentResponseDto> subDtoList = content.getSubContents().stream()
+                    .filter(child -> child.getStatus() == EntityStatus.ACTIVE)
                     .map(this::toDto)
                     .collect(Collectors.toList());
 

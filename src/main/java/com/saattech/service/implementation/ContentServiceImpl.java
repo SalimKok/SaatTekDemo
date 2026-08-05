@@ -9,6 +9,7 @@ import com.saattech.entity.Content;
 import com.saattech.entity.ContentCast;
 import com.saattech.entity.Metadata;
 import com.saattech.enums.CastType;
+import com.saattech.enums.ContentType;
 import com.saattech.enums.EntityStatus;
 import com.saattech.exception.DuplicateResourceException;
 import com.saattech.mapper.ContentMapper;
@@ -73,22 +74,23 @@ public class ContentServiceImpl implements ContentService {
         if (imdbId != null && !imdbId.trim().isEmpty()) {
             Optional<Content> existingOpt = contentRepository.findByMetadata_ImdbID(imdbId.trim());
             if (existingOpt.isPresent()) {
-                Content existingContent = existingOpt.get();
+                return handleExistingContent(existingOpt.get(), requestDto, "This content already exists!");
+            }
+        }
 
-                if (existingContent.getStatus() == EntityStatus.ACTIVE) {
-                    throw new DuplicateResourceException("This movie already exists in active records! IMDB ID: " + imdbId);
-                }
+        if (requestDto.getParentId() != null && requestDto.getContentType() == ContentType.SEASON && requestDto.getSeasonNo() != null) {
+            Optional<Content> existingSeason = contentRepository.findByParentContent_IdAndContentTypeAndSeasonNo(
+                    requestDto.getParentId(), ContentType.SEASON, requestDto.getSeasonNo());
+            if (existingSeason.isPresent()) {
+                return handleExistingContent(existingSeason.get(), requestDto, "Season " + requestDto.getSeasonNo() + " is already active!");
+            }
+        }
 
-                if (existingContent.getStatus() == EntityStatus.DELETED) {
-                    existingContent.setStatus(EntityStatus.ACTIVE);
-
-                    if (requestDto.getMetadata() != null) {
-                        metadataService.updateMetadata(existingContent.getMetadata(), requestDto.getMetadata());
-                    }
-
-                    Content restoredContent = contentRepository.save(existingContent);
-                    return contentMapper.toDto(restoredContent);
-                }
+        if (requestDto.getParentId() != null && requestDto.getContentType() == ContentType.EPISODE && requestDto.getEpisodeNo() != null) {
+            Optional<Content> existingEpisode = contentRepository.findByParentContent_IdAndContentTypeAndEpisodeNo(
+                    requestDto.getParentId(), ContentType.EPISODE, requestDto.getEpisodeNo());
+            if (existingEpisode.isPresent()) {
+                return handleExistingContent(existingEpisode.get(), requestDto, "Episode " + requestDto.getEpisodeNo() + " is already active!");
             }
         }
 
@@ -102,12 +104,41 @@ public class ContentServiceImpl implements ContentService {
         return contentMapper.toDto(savedContent);
     }
 
+    private ContentResponseDto handleExistingContent(Content existingContent, ContentRequestDto requestDto, String activeErrorMessage) {
+        if (existingContent.getStatus() == EntityStatus.ACTIVE) {
+            throw new DuplicateResourceException(activeErrorMessage);
+        }
+
+        if (existingContent.getStatus() == EntityStatus.DELETED) {
+            existingContent.setStatus(EntityStatus.ACTIVE);
+
+            if (requestDto.getMetadata() != null) {
+                metadataService.updateMetadata(existingContent.getMetadata(), requestDto.getMetadata());
+            }
+
+            Content restoredContent = contentRepository.save(existingContent);
+            return contentMapper.toDto(restoredContent);
+        }
+
+        return contentMapper.toDto(existingContent);
+    }
+
+
     @Transactional
     @Override
     public void deleteContent(Long id){
         Content content = contentRepository.findByIdAndStatus(id, EntityStatus.ACTIVE)
                 .orElseThrow(() -> new ResourceNotFoundException("Content to delete not found! ID: " + id));
+        softDeleteRecursively(content);
+    }
+
+    private void softDeleteRecursively(Content content) {
         content.setStatus(EntityStatus.DELETED);
+        if (content.getSubContents() != null) {
+            for (Content child : content.getSubContents()) {
+                softDeleteRecursively(child);
+            }
+        }
         contentRepository.save(content);
     }
 
