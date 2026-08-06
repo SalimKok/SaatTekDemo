@@ -1,9 +1,7 @@
 package com.saattech.controller;
 
-import com.saattech.dto.request.ContentRequestDto;
+import  com.saattech.dto.request.ContentRequestDto;
 import com.saattech.dto.response.ContentResponseDto;
-import com.saattech.elasticsearch.ContentIndex;
-import com.saattech.elasticsearch.service.ContentSearchService;
 import com.saattech.enums.CastType;
 import com.saattech.service.ContentService;
 import com.saattech.specification.dto.ContentFilterDto;
@@ -20,7 +18,6 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 public class ContentController {
     private final ContentService contentService;
-    private final ContentSearchService contentSearchService;
 
     @GetMapping
     public ResponseEntity<Page<ContentResponseDto>> getAllContents(ContentFilterDto filterDto, Pageable pageable) {
@@ -67,23 +64,4 @@ public class ContentController {
         ContentResponseDto updatedContent = contentService.updateContent(id, requestDto, updateChildren);
         return ResponseEntity.ok(updatedContent);
     }
-
-
-    @GetMapping("/search")
-    public ResponseEntity<Page<ContentIndex>> searchContents(
-            @RequestParam(required = false) String query,
-            ContentFilterDto filterDto,
-            Pageable pageable) {
-
-        Page<ContentIndex> searchResults = contentSearchService.search(query, filterDto, pageable);
-        return ResponseEntity.ok(searchResults);
-    }
-
-
-    @PostMapping("/sync-elasticsearch")
-    public ResponseEntity<String> syncElasticsearch() {
-        contentSearchService.syncAllContents();
-        return ResponseEntity.ok("All contents synchronized to Elasticsearch successfully!");
-    }
-
 }

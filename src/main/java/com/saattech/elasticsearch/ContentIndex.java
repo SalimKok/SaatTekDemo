@@ -65,5 +65,8 @@ public class ContentIndex {
 
     @Transient
     private Float score;
+
+    @Transient
+    private MatchExplanationDto matchExplanation;
 }
 

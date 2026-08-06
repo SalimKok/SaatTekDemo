@@ -12,4 +12,8 @@ public class ContentFilterDto {
     private String genre;
     private Double minRating;
     private Integer year;
+    private Float titleBoost;
+    private Float plotBoost;
+    private Float castBoost;
+    private Float genreBoost;
 }
