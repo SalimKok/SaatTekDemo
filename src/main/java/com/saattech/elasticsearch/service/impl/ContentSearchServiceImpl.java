@@ -45,9 +45,9 @@ public class ContentSearchServiceImpl implements ContentSearchService {
             if (query != null && !query.trim().isEmpty()) {
                 String trimmed = query.trim();
                 Criteria textCriteria = new Criteria("title").fuzzy(trimmed)
-                        .or(new Criteria("plot").contains(trimmed))
-                        .or(new Criteria("genre").contains(trimmed))
-                        .or(new Criteria("castNames").contains(trimmed));
+                        .or(new Criteria("plot").is(trimmed))
+                        .or(new Criteria("genre").is(trimmed))
+                        .or(new Criteria("castNames").is(trimmed));
 
                 criteria = (criteria == null) ? textCriteria : criteria.and(textCriteria);
                 hasCriteria = true;
@@ -97,7 +97,11 @@ public class ContentSearchServiceImpl implements ContentSearchService {
 
             List<ContentIndex> contents = searchHits.getSearchHits()
                     .stream()
-                    .map(SearchHit::getContent)
+                    .map(hit -> {
+                        ContentIndex item = hit.getContent();
+                        item.setScore(hit.getScore());
+                        return item;
+                    })
                     .collect(Collectors.toList());
 
             return new PageImpl<>(contents, pageable, searchHits.getTotalHits());
