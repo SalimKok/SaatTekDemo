@@ -31,3 +31,8 @@ build/
 
 ### VS Code ###
 .vscode/
+
+**/.angular/
+**/.angular/cache/
+**/node_modules/
+**/tmp/
